@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asignador de CA</title>
+    <style>
+        .in_form {
+            padding: 8px;
+            margin-bottom: 16px;
+            display: block;
+            width: 300px;
+        }
+        
+        .btn_form {
+            padding: 8px;
+            margin-bottom: 16px;
+            display: block;
+            width: 300px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Asignador de CA</h1>
+    <form id="form_ca">
+        <label for="in_nombre_general">Descripción (item)</label>
+        <input type="text" name="in_nombre_general" id="in_nombre_general" placeholder="Ingrese aquí el nombre genérico" required autocomplete="off" class="in_form">
+        <label for="in_contador_ca">Contador (item)</label>
+        <input type="number" name="in_contador_ca" id="in_contador_ca" placeholder="Contador de CA" value="1" required class="in_form">
+        <label for="in_version_ca">Versión (item)</label>
+        <input type="number" name="in_version_ca" id="in_version_ca" placeholder="version" value="1" required class="in_form">
+        <label for="in_autor_ca">Autor (id)</label>
+        <input type="text" name="in_autor_ca" id="in_autor_ca" placeholder="Autor" value="PM1" required class="in_form">
+
+        <button id="btn_generar_ca" type="submit" class="btn_form">Generar ca</button>
+    </form>
+    <h2>C.A.:</h2>
+    <h2 id="out_ca_generado">null</h2>
+
+    <script>
+        (function() {
+            //funciones y procedimientos
+            function copiarAlPortapapeles(id_elemento) {
+                var aux = document.createElement("input");
+                var contenido = document.getElementById(id_elemento).innerHTML
+                aux.setAttribute("value", contenido);
+                document.body.appendChild(aux);
+                aux.select();
+                document.execCommand("copy");
+                document.body.removeChild(aux);
+                console.log('Se copió con éxito al portapeles el C.A.: ' + contenido)
+                    //alert('Se copió con éxito al portapeles el C.A.: ' + contenido)
+            }
+
+            function gNodoById(id) {
+                return document.getElementById(id)
+            }
+
+            function formatearParaDosDigitos(numero) { //funcion que devuelve una cadena de dos caracteres
+                if (numero < 10) {
+                    numero = '0' + numero
+                }
+                return numero
+            }
+
+            function generarCA(contenido, contador, version, creador) { //contenido, contador, version, creador
+
+                if (contenido == '') {
+                    alert('Por favor ingrese un nombre o descripción (del item)')
+                    return null;
+                }
+                if (contador < 1) {
+                    alert('El Contador (item) debe ser mayor a cero')
+                    return null;
+                }
+                if (version < 1) {
+                    alert('La Versión (item) debe ser mayor a cero')
+                    return null;
+                }
+                if (creador == '') {
+                    alert('Por favor ingrese la referencia del Autor (id)')
+                    return null;
+                }
+
+
+                var ano, mes, dia, hora, minutos, segundos, milisegundos
+
+                var id = Date.now()
+
+                var fecha = new Date()
+
+                var cadenaCA = ''
+
+                ano = fecha.getFullYear()
+                mes = formatearParaDosDigitos(fecha.getMonth() + 1)
+                dia = formatearParaDosDigitos(fecha.getDate())
+                hora = formatearParaDosDigitos(fecha.getHours())
+                minutos = formatearParaDosDigitos(fecha.getMinutes())
+                segundos = formatearParaDosDigitos(fecha.getSeconds())
+                milisegundos = fecha.getUTCMilliseconds()
+                if (milisegundos < 100) {
+                    if (milisegundos < 10) {
+                        milisegundos = '00' + milisegundos
+                    } else {
+                        milisegundos = '0' + milisegundos
+                    }
+                }
+
+                cadenaCA = '' + ano + mes + dia + hora + minutos + segundos + milisegundos + '-' + contador + '-' + version + '-(' + contenido + ')-' + id + '-' + creador
+
+                return cadenaCA;
+
+            }
+            //constantes
+            //tipos
+            //variables
+            var form_ca = gNodoById('form_ca')
+
+            var in_nombre_general = gNodoById('in_nombre_general')
+
+            var in_contador_ca = gNodoById('in_contador_ca')
+            var in_version_ca = gNodoById('in_version_ca')
+            var in_autor_ca = gNodoById('in_autor_ca')
+            var out_ca_generado = gNodoById('out_ca_generado')
+            var cadenaCA = ''
+
+            //inicio
+            form_ca.addEventListener('submit', async function(e) {
+                e.preventDefault()
+                var contenido, contador, version, creador
+
+                contenido = in_nombre_general.value
+                contador = in_contador_ca.value
+                version = in_version_ca.value
+                creador = in_autor_ca.value
+
+                cadenaCA = generarCA(contenido, contador, version, creador) //parametros actuales: contenido, contador, version, creador
+                if (cadenaCA != null) {
+                    out_ca_generado.textContent = cadenaCA
+                } else {
+                    out_ca_generado.textContent = 'No fue posible generar su CA'
+                }
+                copiarAlPortapapeles('out_ca_generado')
+
+            })
+
+            //fin
+        })()
+    </script>
+</body>
+
+</html>
